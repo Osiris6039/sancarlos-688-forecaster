@@ -23,8 +23,20 @@ def load_data():
         return pd.DataFrame(columns=["date", "sales", "customers", "weather", "add_ons"])
 
 def save_data(df):
-    df = df.sort_values(by="date")
-    df.to_csv("historical_data.csv", index=False)
+    try:
+        # Convert 'date' column to datetime safely
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+
+        # Drop rows with invalid or NaT dates
+        df = df.dropna(subset=['date'])
+
+        # Sort again by proper datetime
+        df = df.sort_values(by='date')
+
+        df.to_csv("data/historical_data.csv", index=False)
+    except Exception as e:
+        st.error(f"Save failed: {e}")
+
 
 data = load_data()
 
