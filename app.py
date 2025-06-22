@@ -21,7 +21,18 @@ def load_data():
         return pd.read_csv("historical_data.csv", parse_dates=["date"])
     except:
         return pd.DataFrame(columns=["date", "sales", "customers", "weather", "add_ons"])
+import os
 
+def save_data(df):
+    try:
+        os.makedirs("data", exist_ok=True)  # ✅ Auto-create folder if missing
+
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        df = df.dropna(subset=['date'])
+        df = df.sort_values(by='date')
+        df.to_csv("data/historical_data.csv", index=False)
+    except Exception as e:
+        st.error(f"Save failed: {e}")
 def save_data(df):
     try:
         # Convert 'date' column to datetime safely
